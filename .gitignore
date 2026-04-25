@@ -6,8 +6,8 @@ __pycache__/
 # data
 data/
 
-# API keys
-.env/
+# API keys / database
+.env
 
 # VS Code
 .vscode/
