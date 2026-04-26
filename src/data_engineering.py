@@ -1,7 +1,19 @@
 from dotenv import load_dotenv
-import mysql.connector
+from pathlib import Path
+from sqlalchemy import create_engine
 import pandas as pd
 import os 
+
+
+load_dotenv(Path(__file__).parent.parent / ".env")
+
+
+def get_engine():
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASSWORD")
+    host = os.getenv("DB_HOST")
+    database = os.getenv("DB_NAME")
+    return create_engine(f"mysql+mysqlconnector://{user}@{host}/{database}")
 
 
 query = '''
@@ -40,15 +52,14 @@ WHERE imd.inventariomesdetalle_diferencia IS NOT NULL
     AND p.producto_baja = 0;
 '''
 
+
 def get_inventory_data():
-    load_dotenv()
-    conn =  mysql.connector.connect(
-        host=os.getenv("DB_HOST"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        database=os.getenv("DB_NAME")
-        )
-    df = pd.read_sql(query, conn)
-    conn.close()
+    engine = get_engine()
+    df = pd.read_sql(query, engine)
     return df
 
+
+if __name__ == "__main__":
+    df = get_inventory_data()
+    print(df.shape)
+    print(df.head())
