@@ -105,6 +105,9 @@ def generar_hallazgos(df, id_cierre, top_n = 20):
     
     # Filtrar solo outliers de ese cierre (alerta o critico)
     outliers = df[(df['idinventariomes'] == id_cierre) & (df['severidad'].isin(['alerta', 'critico']))]
+
+    # with this we ensure that money impact is always positive 
+    outliers['inventariomesdetalle_difimporte'] = outliers['inventariomesdetalle_difimporte'].abs()
     
     # Si no hay outliers el cierre está limpio
     if len(outliers) == 0:
@@ -120,6 +123,7 @@ def generar_hallazgos(df, id_cierre, top_n = 20):
     print(f"Críticos: {n_criticos}")
     print(f"Alertas: {n_alertas}")
     print(f"Impacto total: ${impacto_total:,.2f}")
+
     
     # Construir tabla de hallazgos
     return(
